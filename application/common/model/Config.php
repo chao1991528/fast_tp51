@@ -147,7 +147,7 @@ class Config extends Model
      */
     public static function upload()
     {
-        $uploadcfg = config('upload');
+        $uploadcfg = config('upload.');
 
         $upload = [
             'cdnurl'    => $uploadcfg['cdnurl'],

@@ -4,7 +4,7 @@ namespace app\admin\controller\auth;
 
 use app\common\controller\Backend;
 use fast\Tree;
-use think\Cache;
+use think\facade\Cache;
 use think\Collection;
 
 /**
@@ -52,7 +52,7 @@ class Rule extends Backend
      */
     public function index()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             $list = $this->rulelist;
             $total = count($this->rulelist);
@@ -69,9 +69,9 @@ class Rule extends Backend
      */
     public function add()
     {
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = request()->post("row/a", [], 'strip_tags');
             if ($params)
             {
                 if (!$params['ismenu'] && !$params['pid'])
@@ -99,9 +99,9 @@ class Rule extends Backend
         $row = $this->model->get(['id' => $ids]);
         if (!$row)
             $this->error(__('No Results were found'));
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = request()->post("row/a", [], 'strip_tags');
             if ($params)
             {
                 if (!$params['ismenu'] && !$params['pid'])

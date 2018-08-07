@@ -6,6 +6,7 @@ use app\common\controller\Backend;
 use app\common\library\Email;
 use app\common\model\Config as ConfigModel;
 use think\Exception;
+use think\facade\Env;
 
 /**
  * 系统配置
@@ -69,8 +70,8 @@ class Config extends Backend
      */
     public function add()
     {
-        if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+        if (request()->isPost()) {
+            $params = request()->post("row/a");
             if ($params) {
                 foreach ($params as $k => &$v) {
                     $v = is_array($v) ? implode(',', $v) : $v;
@@ -107,8 +108,8 @@ class Config extends Backend
      */
     public function edit($ids = NULL)
     {
-        if ($this->request->isPost()) {
-            $row = $this->request->post("row/a");
+        if (request()->isPost()) {
+            $row = request()->post("row/a");
             if ($row) {
                 $configList = [];
                 foreach ($this->model->all() as $v) {
@@ -152,7 +153,7 @@ class Config extends Backend
             }
             $config[$value['name']] = $value['value'];
         }
-        file_put_contents(APP_PATH . 'extra' . DS . 'site.php', '<?php' . "\n\nreturn " . var_export($config, true) . ";");
+        file_put_contents(Env::get('root_path') . 'config' . DS . 'site.php', '<?php' . "\n\nreturn " . var_export($config, true) . ";");
     }
 
     /**
@@ -161,7 +162,7 @@ class Config extends Backend
      */
     public function check()
     {
-        $params = $this->request->post("row/a");
+        $params = request()->post("row/a");
         if ($params) {
 
             $config = $this->model->get($params);
@@ -181,9 +182,9 @@ class Config extends Backend
      */
     public function emailtest()
     {
-        $row = $this->request->post('row/a');
-        \think\facade\Config::set('site', array_merge(\think\facade\Config::get('site'), $row));
-        $receiver = $this->request->request("receiver");
+        $row = request()->post('row/a');
+        \think\facade\Config::set('site', array_merge(\think\facade\Config::get('site.'), $row));
+        $receiver = request()->request("receiver");
         $email = new Email;
         $result = $email
             ->to($receiver)

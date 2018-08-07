@@ -30,8 +30,8 @@ class Attachment extends Backend
     public function index()
     {
         //设置过滤方法
-        $this->request->filter(['strip_tags']);
-        if ($this->request->isAjax())
+        request()->filter(['strip_tags']);
+        if (request()->isAjax())
         {
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
@@ -44,7 +44,7 @@ class Attachment extends Backend
                     ->order($sort, $order)
                     ->limit($offset, $limit)
                     ->select();
-            $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', $this->request->root());
+            $cdnurl = preg_replace("/\/(\w+)\.php$/i", '', request()->root());
             foreach ($list as $k => &$v)
             {
                 $v['fullurl'] = ($v['storage'] == 'local' ? $cdnurl : $this->view->config['upload']['cdnurl']) . $v['url'];
@@ -62,7 +62,7 @@ class Attachment extends Backend
      */
     public function select()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             return $this->index();
         }
@@ -74,7 +74,7 @@ class Attachment extends Backend
      */
     public function add()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             $this->error();
         }

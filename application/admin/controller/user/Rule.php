@@ -52,7 +52,7 @@ class Rule extends Backend
      */
     public function index()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             $list = $this->rulelist;
             $total = count($this->rulelist);

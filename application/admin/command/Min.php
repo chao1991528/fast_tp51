@@ -50,7 +50,7 @@ class Min extends Command
         $resourceArr = $resource == 'all' ? ['js', 'css'] : [$resource];
 
         $minPath = __DIR__ . DS . 'Min' . DS;
-        $publicPath = ROOT_PATH . 'public' . DS;
+        $publicPath = \think\facade\Env::get('root_path') . 'public' . DS;
         $tempFile = $minPath . 'temp.js';
 
         $nodeExec = '';
@@ -89,8 +89,8 @@ class Min extends Command
                     'jsBaseUrl'   => $this->options['jsBaseUrl'],
                     'cssBaseName' => str_replace('{module}', $mod, $this->options['cssBaseName']),
                     'cssBaseUrl'  => $this->options['cssBaseUrl'],
-                    'jsBasePath'  => str_replace(DS, '/', ROOT_PATH . $this->options['jsBaseUrl']),
-                    'cssBasePath' => str_replace(DS, '/', ROOT_PATH . $this->options['cssBaseUrl']),
+                    'jsBasePath'  => str_replace(DS, '/', \think\facade\Env::get('root_path') . $this->options['jsBaseUrl']),
+                    'cssBasePath' => str_replace(DS, '/', \think\facade\Env::get('root_path') . $this->options['cssBaseUrl']),
                     'optimize'    => $optimize,
                     'ds'          => DS,
                 ];

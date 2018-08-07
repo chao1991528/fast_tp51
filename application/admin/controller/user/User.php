@@ -32,11 +32,11 @@ class User extends Backend
     public function index()
     {
         //设置过滤方法
-        $this->request->filter(['strip_tags']);
-        if ($this->request->isAjax())
+        request()->filter(['strip_tags']);
+        if (request()->isAjax())
         {
             //如果发送的来源是Selectpage，则转发到Selectpage
-            if ($this->request->request('keyField'))
+            if (request()->request('keyField'))
             {
                 return $this->selectpage();
             }

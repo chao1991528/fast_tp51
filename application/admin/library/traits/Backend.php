@@ -13,10 +13,10 @@ trait Backend
     public function index()
     {
         //设置过滤方法
-        $this->request->filter(['strip_tags']);
-        if ($this->request->isAjax()) {
+        request()->filter(['strip_tags']);
+        if (request()->isAjax()) {
             //如果发送的来源是Selectpage，则转发到Selectpage
-            if ($this->request->request('keyField')) {
+            if (request()->request('keyField')) {
                 return $this->selectpage();
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
@@ -45,8 +45,8 @@ trait Backend
     public function recyclebin()
     {
         //设置过滤方法
-        $this->request->filter(['strip_tags']);
-        if ($this->request->isAjax()) {
+        request()->filter(['strip_tags']);
+        if (request()->isAjax()) {
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model
                 ->onlyTrashed()
@@ -73,8 +73,8 @@ trait Backend
      */
     public function add()
     {
-        if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+        if (request()->isPost()) {
+            $params = request()->post("row/a");
             if ($params) {
                 if ($this->dataLimit && $this->dataLimitFieldAutoFill) {
                     $params[$this->dataLimitField] = $this->auth->id;
@@ -117,8 +117,8 @@ trait Backend
                 $this->error(__('You have no permission'));
             }
         }
-        if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+        if (request()->isPost()) {
+            $params = request()->post("row/a");
             if ($params) {
                 try {
                     //是否采用模型验证
@@ -225,10 +225,10 @@ trait Backend
      */
     public function multi($ids = "")
     {
-        $ids = $ids ? $ids : $this->request->param("ids");
+        $ids = $ids ? $ids : request()->param("ids");
         if ($ids) {
-            if ($this->request->has('params')) {
-                parse_str($this->request->post("params"), $values);
+            if (request()->has('params')) {
+                parse_str(request()->post("params"), $values);
                 $values = array_intersect_key($values, array_flip(is_array($this->multiFields) ? $this->multiFields : explode(',', $this->multiFields)));
                 if ($values) {
                     $adminIds = $this->getDataLimitAdminIds();
@@ -258,7 +258,7 @@ trait Backend
      */
     protected function import()
     {
-        $file = $this->request->request('file');
+        $file = request()->request('file');
         if (!$file) {
             $this->error(__('Parameter %s can not be empty', 'file'));
         }

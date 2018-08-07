@@ -19,9 +19,9 @@ class User extends Frontend
     protected $noNeedLogin = ['login', 'register', 'third'];
     protected $noNeedRight = ['*'];
 
-    public function _initialize()
+    public function initialize()
     {
-        parent::_initialize();
+        parent::initialize();
         $auth = $this->auth;
 
         if (!Config::get('fastadmin.usercenter')) {
@@ -67,16 +67,16 @@ class User extends Frontend
      */
     public function register()
     {
-        $url = $this->request->request('url');
+        $url = request()->request('url');
         if ($this->auth->id)
             $this->success(__('You\'ve logged in, do not login again'), $url);
-        if ($this->request->isPost()) {
-            $username = $this->request->post('username');
-            $password = $this->request->post('password');
-            $email = $this->request->post('email');
-            $mobile = $this->request->post('mobile', '');
-            $captcha = $this->request->post('captcha');
-            $token = $this->request->post('__token__');
+        if (request()->isPost()) {
+            $username = request()->post('username');
+            $password = request()->post('password');
+            $email = request()->post('email');
+            $mobile = request()->post('mobile', '');
+            $captcha = request()->post('captcha');
+            $token = request()->post('__token__');
             $rule = [
                 'username'  => 'require|length:3,30',
                 'password'  => 'require|length:6,30',
@@ -104,10 +104,10 @@ class User extends Frontend
                 'captcha'   => $captcha,
                 '__token__' => $token,
             ];
-            $validate = new Validate($rule, $msg);
+            $validate = Validate::make($rule, $msg);
             $result = $validate->check($data);
             if (!$result) {
-                $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+                $this->error(__($validate->getError()), null, ['token' => request()->token()]);
             }
             if ($this->auth->register($username, $password, $email, $mobile)) {
                 $synchtml = '';
@@ -118,12 +118,12 @@ class User extends Frontend
                 }
                 $this->success(__('Sign up successful') . $synchtml, $url ? $url : url('user/index'));
             } else {
-                $this->error($this->auth->getError(), null, ['token' => $this->request->token()]);
+                $this->error($this->auth->getError(), null, ['token' => request()->token()]);
             }
         }
         //判断来源
-        $referer = $this->request->server('HTTP_REFERER');
-        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+        $referer = request()->server('HTTP_REFERER');
+        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower(request()->host()))
             && !preg_match("/(user\/login|user\/register)/i", $referer)) {
             $url = $referer;
         }
@@ -137,14 +137,14 @@ class User extends Frontend
      */
     public function login()
     {
-        $url = $this->request->request('url');
+        $url = request()->request('url');
         if ($this->auth->id)
             $this->success(__('You\'ve logged in, do not login again'), $url);
-        if ($this->request->isPost()) {
-            $account = $this->request->post('account');
-            $password = $this->request->post('password');
-            $keeplogin = (int)$this->request->post('keeplogin');
-            $token = $this->request->post('__token__');
+        if (request()->isPost()) {
+            $account = request()->post('account');
+            $password = request()->post('password');
+            $keeplogin = (int)request()->post('keeplogin');
+            $token = request()->post('__token__');
             $rule = [
                 'account'   => 'require|length:3,50',
                 'password'  => 'require|length:6,30',
@@ -162,10 +162,10 @@ class User extends Frontend
                 'password'  => $password,
                 '__token__' => $token,
             ];
-            $validate = new Validate($rule, $msg);
+            $validate = Validate::make($rule, $msg);
             $result = $validate->check($data);
             if (!$result) {
-                $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+                $this->error(__($validate->getError()), null, ['token' => request()->token()]);
                 return FALSE;
             }
             if ($this->auth->login($account, $password)) {
@@ -177,12 +177,12 @@ class User extends Frontend
                 }
                 $this->success(__('Logged in successful') . $synchtml, $url ? $url : url('user/index'));
             } else {
-                $this->error($this->auth->getError(), null, ['token' => $this->request->token()]);
+                $this->error($this->auth->getError(), null, ['token' => request()->token()]);
             }
         }
         //判断来源
-        $referer = $this->request->server('HTTP_REFERER');
-        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower($this->request->host()))
+        $referer = request()->server('HTTP_REFERER');
+        if (!$url && (strtolower(parse_url($referer, PHP_URL_HOST)) == strtolower(request()->host()))
             && !preg_match("/(user\/login|user\/register)/i", $referer)) {
             $url = $referer;
         }
@@ -221,11 +221,11 @@ class User extends Frontend
      */
     public function changepwd()
     {
-        if ($this->request->isPost()) {
-            $oldpassword = $this->request->post("oldpassword");
-            $newpassword = $this->request->post("newpassword");
-            $renewpassword = $this->request->post("renewpassword");
-            $token = $this->request->post('__token__');
+        if (request()->isPost()) {
+            $oldpassword = request()->post("oldpassword");
+            $newpassword = request()->post("newpassword");
+            $renewpassword = request()->post("renewpassword");
+            $token = request()->post('__token__');
             $rule = [
                 'oldpassword'   => 'require|length:6,30',
                 'newpassword'   => 'require|length:6,30',
@@ -246,10 +246,10 @@ class User extends Frontend
                 'newpassword'   => __('New password'),
                 'renewpassword' => __('Renew password')
             ];
-            $validate = new Validate($rule, $msg, $field);
+            $validate = Validate::make($rule, $msg, $field);
             $result = $validate->check($data);
             if (!$result) {
-                $this->error(__($validate->getError()), null, ['token' => $this->request->token()]);
+                $this->error(__($validate->getError()), null, ['token' => request()->token()]);
                 return FALSE;
             }
 
@@ -263,7 +263,7 @@ class User extends Frontend
                 }
                 $this->success(__('Reset password successful') . $synchtml, url('user/login'));
             } else {
-                $this->error($this->auth->getError(), null, ['token' => $this->request->token()]);
+                $this->error($this->auth->getError(), null, ['token' => request()->token()]);
             }
         }
         $this->view->assign('title', __('Change password'));

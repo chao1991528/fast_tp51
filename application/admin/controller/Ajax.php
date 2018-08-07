@@ -5,7 +5,7 @@ namespace app\admin\controller;
 use app\common\controller\Backend;
 use fast\Random;
 use think\addons\Service;
-use think\Cache;
+use think\facade\Cache;
 use think\facade\Config;
 use think\Db;
 use think\facade\Lang;
@@ -26,7 +26,7 @@ class Ajax extends Backend
         parent::initialize();
 
         //设置过滤方法
-        $this->request->filter(['strip_tags', 'htmlspecialchars']);
+        request()->filter(['strip_tags', 'htmlspecialchars']);
     }
 
     /**
@@ -47,7 +47,7 @@ class Ajax extends Backend
     public function upload()
     {
         Config::set('default_return_type', 'json');
-        $file = $this->request->file('file');
+        $file = request()->file('file');
         if (empty($file)) {
             $this->error(__('No file upload or server upload limit exceeded'));
         }
@@ -138,20 +138,20 @@ class Ajax extends Backend
     public function weigh()
     {
         //排序的数组
-        $ids = $this->request->post("ids");
+        $ids = request()->post("ids");
         //拖动的记录ID
-        $changeid = $this->request->post("changeid");
+        $changeid = request()->post("changeid");
         //操作字段
-        $field = $this->request->post("field");
+        $field = request()->post("field");
         //操作的数据表
-        $table = $this->request->post("table");
+        $table = request()->post("table");
         //排序的方式
-        $orderway = $this->request->post("orderway", 'strtolower');
+        $orderway = request()->post("orderway", 'strtolower');
         $orderway = $orderway == 'asc' ? 'ASC' : 'DESC';
         $sour = $weighdata = [];
         $ids = explode(',', $ids);
         $prikey = 'id';
-        $pid = $this->request->post("pid");
+        $pid = request()->post("pid");
         //限制更新的字段
         $field = in_array($field, ['weigh']) ? $field : 'weigh';
 
@@ -196,7 +196,7 @@ class Ajax extends Backend
      */
     public function wipecache()
     {
-        $type = $this->request->request("type");
+        $type = request()->request("type");
         switch ($type) {
             case 'content' || 'all':
                 rmdirs(CACHE_PATH, false);
@@ -222,8 +222,8 @@ class Ajax extends Backend
      */
     public function category()
     {
-        $type = $this->request->get('type');
-        $pid = $this->request->get('pid');
+        $type = request()->get('type');
+        $pid = request()->get('pid');
         $where = ['status' => 'normal'];
         $categorylist = null;
         if ($pid !== '') {
@@ -244,8 +244,8 @@ class Ajax extends Backend
      */
     public function area()
     {
-        $province = $this->request->get('province');
-        $city = $this->request->get('city');
+        $province = request()->get('province');
+        $city = request()->get('city');
         $where = ['pid' => 0, 'level' => 1];
         $provincelist = null;
         if ($province !== '') {

@@ -67,7 +67,7 @@ class Group extends Backend
      */
     public function index()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             $list = AuthGroup::all(array_keys($this->groupdata));
             $list = Collection::make($list)->toArray();
@@ -98,9 +98,9 @@ class Group extends Backend
      */
     public function add()
     {
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = request()->post("row/a", [], 'strip_tags');
             $params['rules'] = explode(',', $params['rules']);
             if (!in_array($params['pid'], $this->childrenGroupIds))
             {
@@ -139,9 +139,9 @@ class Group extends Backend
         $row = $this->model->get(['id' => $ids]);
         if (!$row)
             $this->error(__('No Results were found'));
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a", [], 'strip_tags');
+            $params = request()->post("row/a", [], 'strip_tags');
             // 父节点不能是它自身的子节点
             if (!in_array($params['pid'], $this->childrenGroupIds))
             {
@@ -244,8 +244,8 @@ class Group extends Backend
         $this->loadlang('auth/group');
 
         $model = model('AuthGroup');
-        $id = $this->request->post("id");
-        $pid = $this->request->post("pid");
+        $id = request()->post("id");
+        $pid = request()->post("pid");
         $parentGroupModel = $model->get($pid);
         $currentGroupModel = NULL;
         if ($id)

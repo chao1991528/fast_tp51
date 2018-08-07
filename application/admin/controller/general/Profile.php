@@ -21,8 +21,8 @@ class Profile extends Backend
     public function index()
     {
         //设置过滤方法
-        $this->request->filter(['strip_tags']);
-        if ($this->request->isAjax())
+        request()->filter(['strip_tags']);
+        if (request()->isAjax())
         {
             $model = model('AdminLog');
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
@@ -52,9 +52,9 @@ class Profile extends Backend
      */
     public function update()
     {
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a");
+            $params = request()->post("row/a");
             $params = array_filter(array_intersect_key($params, array_flip(array('email', 'nickname', 'password', 'avatar'))));
             unset($v);
             if (isset($params['password']))

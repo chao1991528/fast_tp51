@@ -5,7 +5,7 @@ namespace app\admin\command;
 use app\admin\model\AuthRule;
 use ReflectionClass;
 use ReflectionMethod;
-use think\Cache;
+use think\facade\Cache;
 use think\facade\Config;
 use think\console\Command;
 use think\console\Input;
@@ -165,7 +165,7 @@ class Menu extends Command
 
         $pathArr = $controllerArr;
         array_unshift($pathArr, '', 'application', 'admin', 'controller');
-        $classFile = ROOT_PATH . implode(DS, $pathArr) . $classSuffix . ".php";
+        $classFile = \think\facade\Env::get('root_path') . implode(DS, $pathArr) . $classSuffix . ".php";
         $classContent = file_get_contents($classFile);
         $uniqueName = uniqid("FastAdmin") . $classSuffix;
         $classContent = str_replace("class " . $controllerArr[$key] . $classSuffix . " ", 'class ' . $uniqueName . ' ', $classContent);
@@ -244,7 +244,7 @@ class Menu extends Command
         $ruleArr = [];
         foreach ($methods as $m => $n) {
             //过滤特殊的类
-            if (substr($n->name, 0, 2) == '__' || $n->name == '_initialize') {
+            if (substr($n->name, 0, 2) == '__' || $n->name == 'initialize') {
                 continue;
             }
             //未启用软删除时过滤相关方法

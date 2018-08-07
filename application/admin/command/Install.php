@@ -3,6 +3,7 @@
 namespace app\admin\command;
 
 use PDO;
+use think\Env;
 use think\facade\Config;
 use think\console\Command;
 use think\console\Input;
@@ -52,7 +53,7 @@ class Install extends Command
         $sql = str_replace("`fa_", "`{$prefix}", $sql);
 
         // 先尝试能否自动创建数据库
-        $config = Config::get('database');
+        $config = Config::get('database.');
         $pdo = new PDO("{$config['type']}:host={$hostname}" . ($hostport ? ";port={$hostport}" : ''), $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->query("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET utf8 COLLATE utf8_general_ci;");
@@ -75,7 +76,7 @@ class Install extends Command
 
         file_put_contents($installLockFile, 1);
 
-        $dbConfigFile = APP_PATH . 'database.php';
+        $dbConfigFile = \\think\facade\Env::get("root_path") . 'config' . DS . 'database.php';
         $config = @file_get_contents($dbConfigFile);
         $callback = function ($matches) use ($hostname, $hostport, $username, $password, $database, $prefix) {
             $field = $matches[1];
@@ -89,7 +90,7 @@ class Install extends Command
         // 写入数据库配置
         file_put_contents($dbConfigFile, $config);
 
-        \think\Cache::rm('__menu__');
+        \think\facade\Cache::rm('__menu__');
 
         $output->info("Install Successed!");
     }

@@ -108,9 +108,9 @@ class Backend extends Controller
 
     public function initialize()
     {
-        $modulename = $this->request->module();
-        $controllername = strtolower($this->request->controller());
-        $actionname = strtolower($this->request->action());
+        $modulename = request()->module();
+        $controllername = strtolower(request()->controller());
+        $actionname = strtolower(request()->action());
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
 
@@ -121,7 +121,7 @@ class Backend extends Controller
         !defined('IS_DIALOG') && define('IS_DIALOG', input("dialog") ? TRUE : FALSE);
 
         // 定义是否AJAX请求
-        !defined('IS_AJAX') && define('IS_AJAX', $this->request->isAjax());
+        !defined('IS_AJAX') && define('IS_AJAX', request()->isAjax());
 
         $this->auth = Auth::instance();
 
@@ -133,7 +133,7 @@ class Backend extends Controller
             if (!$this->auth->isLogin()) {
                 Hook::listen('admin_nologin', $this);
                 $url = Session::get('referer');
-                $url = $url ? $url : $this->request->url();
+                $url = $url ? $url : request()->url();
                 $this->error(__('Please login first'), url('index/login', ['url' => $url]));
             }
             // 判断是否需要验证权限
@@ -147,13 +147,13 @@ class Backend extends Controller
         }
 
         // 非选项卡时重定向
-        if (!$this->request->isPost() && !IS_AJAX && !IS_ADDTABS && !IS_DIALOG && input("ref") == 'addtabs') {
+        if (!request()->isPost() && !IS_AJAX && !IS_ADDTABS && !IS_DIALOG && input("ref") == 'addtabs') {
             $url = preg_replace_callback("/([\?|&]+)ref=addtabs(&?)/i", function ($matches) {
                 return $matches[2] == '&' ? $matches[1] : '';
-            }, $this->request->url());
+            }, request()->url());
             if (Config::get('url_domain_deploy')) {
-                if (stripos($url, $this->request->server('SCRIPT_NAME')) === 0) {
-                    $url = substr($url, strlen($this->request->server('SCRIPT_NAME')));
+                if (stripos($url, request()->server('SCRIPT_NAME')) === 0) {
+                    $url = substr($url, strlen(request()->server('SCRIPT_NAME')));
                 }
                 $url = url($url, '', false);
             }
@@ -172,7 +172,7 @@ class Backend extends Controller
         }
 
         // 语言检测
-        $lang = strip_tags($this->request->langset());
+        $lang = strip_tags(request()->langset());
 
         $site = Config::get("site.");
 
@@ -218,7 +218,7 @@ class Backend extends Controller
      */
     protected function loadlang($name)
     {
-        Lang::load(Env::get('app_path') . $this->request->module() . '/lang/' . $this->request->langset() . '/' . str_replace('.', '/', $name) . '.php');
+        Lang::load(Env::get('app_path') . request()->module() . '/lang/' . request()->langset() . '/' . str_replace('.', '/', $name) . '.php');
     }
 
     /**
@@ -241,13 +241,13 @@ class Backend extends Controller
     {
         $searchfields = is_null($searchfields) ? $this->searchFields : $searchfields;
         $relationSearch = is_null($relationSearch) ? $this->relationSearch : $relationSearch;
-        $search = $this->request->get("search", '');
-        $filter = $this->request->get("filter", '');
-        $op = $this->request->get("op", '', 'trim');
-        $sort = $this->request->get("sort", "id");
-        $order = $this->request->get("order", "DESC");
-        $offset = $this->request->get("offset", 0);
-        $limit = $this->request->get("limit", 0);
+        $search = request()->get("search", '');
+        $filter = request()->get("filter", '');
+        $op = request()->get("op", '', 'trim');
+        $sort = request()->get("sort", "id");
+        $order = request()->get("order", "DESC");
+        $offset = request()->get("offset", 0);
+        $limit = request()->get("limit", 0);
         $filter = (array)json_decode($filter, TRUE);
         $op = (array)json_decode($op, TRUE);
         $filter = $filter ? $filter : [];
@@ -399,28 +399,28 @@ class Backend extends Controller
     protected function selectpage()
     {
         //设置过滤方法
-        $this->request->filter(['strip_tags', 'htmlspecialchars']);
+        request()->filter(['strip_tags', 'htmlspecialchars']);
 
         //搜索关键词,客户端输入以空格分开,这里接收为数组
-        $word = (array)$this->request->request("q_word/a");
+        $word = (array)request()->request("q_word/a");
         //当前页
-        $page = $this->request->request("pageNumber");
+        $page = request()->request("pageNumber");
         //分页大小
-        $pagesize = $this->request->request("pageSize");
+        $pagesize = request()->request("pageSize");
         //搜索条件
-        $andor = $this->request->request("andOr", "and", "strtoupper");
+        $andor = request()->request("andOr", "and", "strtoupper");
         //排序方式
-        $orderby = (array)$this->request->request("orderBy/a");
+        $orderby = (array)request()->request("orderBy/a");
         //显示的字段
-        $field = $this->request->request("showField");
+        $field = request()->request("showField");
         //主键
-        $primarykey = $this->request->request("keyField");
+        $primarykey = request()->request("keyField");
         //主键值
-        $primaryvalue = $this->request->request("keyValue");
+        $primaryvalue = request()->request("keyValue");
         //搜索字段
-        $searchfield = (array)$this->request->request("searchField/a");
+        $searchfield = (array)request()->request("searchField/a");
         //自定义搜索条件
-        $custom = (array)$this->request->request("custom/a");
+        $custom = (array)request()->request("custom/a");
         $order = [];
         foreach ($orderby as $k => $v) {
             $order[$v[0]] = $v[1];

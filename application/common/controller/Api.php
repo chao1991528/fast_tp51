@@ -3,6 +3,7 @@
 namespace app\common\controller;
 
 use app\common\library\Auth;
+use think\facade\Env;
 use think\facade\Config;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
@@ -93,16 +94,14 @@ class Api
     protected function initialize()
     {
         //移除HTML标签
-        $this->request->filter('strip_tags');
-
+        Request::filter(['strip_tags']);
         $this->auth = Auth::instance();
 
-        $modulename = $this->request->module();
-        $controllername = strtolower($this->request->controller());
-        $actionname = strtolower($this->request->action());
+        $controllername = strtolower(Request::controller());
+        $actionname = strtolower(Request::action());
 
         // token
-        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
+        $token = Request::server('HTTP_TOKEN', Request::request('token', \think\facade\Cookie::get('token')));
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
         // 设置当前请求的URI
@@ -141,7 +140,7 @@ class Api
         // 上传信息配置后
         Hook::listen("upload_config_init", $upload);
 
-        Config::set('upload', array_merge(Config::get('upload'), $upload));
+        Config::set('upload', array_merge(Config::get('upload.'), $upload));
 
         // 加载当前控制器语言包
         $this->loadlang($controllername);
@@ -153,7 +152,7 @@ class Api
      */
     protected function loadlang($name)
     {
-        Lang::load(APP_PATH . $this->request->module() . '/lang/' . $this->request->langset() . '/' . str_replace('.', '/', $name) . '.php');
+        Lang::load(Env::get('app_path') . Request::module() . '/lang/' . Request::langset() . '/' . str_replace('.', '/', $name) . '.php');
     }
 
     /**
@@ -202,7 +201,7 @@ class Api
             'data' => $data,
         ];
         // 如果未设置类型则自动判断
-        $type = $type ? $type : ($this->request->param(config('var_jsonp_handler')) ? 'jsonp' : $this->responseType);
+        $type = $type ? $type : (request()->param(config('var_jsonp_handler')) ? 'jsonp' : $this->responseType);
 
         if (isset($header['statuscode']))
         {
@@ -234,7 +233,7 @@ class Api
                 $options['only'] = explode(',', $options['only']);
             }
 
-            if (!in_array($this->request->action(), $options['only']))
+            if (!in_array(request()->action(), $options['only']))
             {
                 return;
             }
@@ -246,7 +245,7 @@ class Api
                 $options['except'] = explode(',', $options['except']);
             }
 
-            if (in_array($this->request->action(), $options['except']))
+            if (in_array(request()->action(), $options['except']))
             {
                 return;
             }

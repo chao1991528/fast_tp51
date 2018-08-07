@@ -42,10 +42,10 @@ class Frontend extends Controller
     public function initialize()
     {
         //移除HTML标签
-        $this->request->filter('strip_tags');
-        $modulename = $this->request->module();
-        $controllername = strtolower($this->request->controller());
-        $actionname = strtolower($this->request->action());
+        request()->filter('strip_tags');
+        $modulename = request()->module();
+        $controllername = strtolower(request()->controller());
+        $actionname = strtolower(request()->action());
 
         // 如果有使用模板布局
         if ($this->layout) {
@@ -54,7 +54,7 @@ class Frontend extends Controller
         $this->auth = Auth::instance();
 
         // token
-        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\facade\Cookie::get('token')));
+        $token = request()->server('HTTP_TOKEN', request()->request('token', \think\facade\Cookie::get('token')));
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
         // 设置当前请求的URI
@@ -84,7 +84,7 @@ class Frontend extends Controller
         $this->view->assign('user', $this->auth->getUser());
 
         // 语言检测
-        $lang = strip_tags($this->request->langset());
+        $lang = strip_tags(request()->langset());
 
         $site = Config::get("site.");
 
@@ -122,7 +122,7 @@ class Frontend extends Controller
      */
     protected function loadlang($name)
     {
-        Lang::load(Env::get("app_path") . $this->request->module() . '/lang/' . $this->request->langset() . '/' . str_replace('.', '/', $name) . '.php');
+        Lang::load(Env::get("app_path") . request()->module() . '/lang/' . request()->langset() . '/' . str_replace('.', '/', $name) . '.php');
     }
 
     /**

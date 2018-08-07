@@ -12,9 +12,9 @@ class Index extends Frontend
     protected $noNeedRight = '*';
     protected $layout = '';
 
-    public function _initialize()
+    public function initialize()
     {
-        parent::_initialize();
+        parent::initialize();
     }
 
     public function index()

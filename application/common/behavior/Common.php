@@ -68,7 +68,7 @@ class Common
     {
         // 加载插件语言包
         Lang::load([
-            Env::get('app_path') . 'common' . DS . 'lang' . DS . $request->langset() . DS . 'addon' . EXT,
+            Env::get('app_path') . 'common' . DS . 'lang' . DS . $request->langset() . DS . 'addon.php',
         ]);
         $this->moduleInit($request);
     }

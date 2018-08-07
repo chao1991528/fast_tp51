@@ -1,6 +1,5 @@
 /.idea
 /.vscode
-/vendor
 *.log
 .env
 runtime/*
@@ -8,4 +7,5 @@ composer.lock
 .travis.yml
 /public/uploads/*
 /addons/*
+/thinkphp/
 /application/admin/command/Install/*.lock

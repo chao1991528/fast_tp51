@@ -40,7 +40,7 @@ class Adminlog extends Backend
      */
     public function index()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $total = $this->model

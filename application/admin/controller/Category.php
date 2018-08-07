@@ -26,7 +26,7 @@ class Category extends Backend
     public function initialize()
     {
         parent::initialize();
-        $this->request->filter(['strip_tags']);
+        request()->filter(['strip_tags']);
         $this->model = model('app\common\model\Category');
 
         $tree = Tree::instance();
@@ -47,10 +47,10 @@ class Category extends Backend
      */
     public function index()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
-            $search = $this->request->request("search");
-            $type = $this->request->request("type");
+            $search = request()->request("search");
+            $type = request()->request("type");
 
             //构造父类select列表选项数据
             $list = [];

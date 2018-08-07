@@ -22,7 +22,7 @@ class Ajax extends Frontend
     public function lang()
     {
         header('Content-Type: application/javascript');
-        $callback = $this->request->get('callback');
+        $callback = request()->get('callback');
         $controllername = input("controllername");
         $this->loadlang($controllername);
         //强制输出JSON Object

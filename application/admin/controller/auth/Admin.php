@@ -71,10 +71,10 @@ class Admin extends Backend
      */
     public function index()
     {
-        if ($this->request->isAjax())
+        if (request()->isAjax())
         {
             //如果发送的来源是Selectpage，则转发到Selectpage
-            if ($this->request->request('keyField'))
+            if (request()->request('keyField'))
             {
                 return $this->selectpage();
             }
@@ -129,9 +129,9 @@ class Admin extends Backend
      */
     public function add()
     {
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a");
+            $params = request()->post("row/a");
             if ($params)
             {
                 $params['salt'] = Random::alnum();
@@ -142,7 +142,7 @@ class Admin extends Backend
                 {
                     $this->error($this->model->getError());
                 }
-                $group = $this->request->post("group/a");
+                $group = request()->post("group/a");
 
                 //过滤不允许的组别,避免越权
                 $group = array_intersect($this->childrenGroupIds, $group);
@@ -167,9 +167,9 @@ class Admin extends Backend
         $row = $this->model->get(['id' => $ids]);
         if (!$row)
             $this->error(__('No Results were found'));
-        if ($this->request->isPost())
+        if (request()->isPost())
         {
-            $params = $this->request->post("row/a");
+            $params = request()->post("row/a");
             if ($params)
             {
                 if ($params['password'])
@@ -196,7 +196,7 @@ class Admin extends Backend
                 // 先移除所有权限
                 model('AuthGroupAccess')->where('uid', $row->id)->delete();
 
-                $group = $this->request->post("group/a");
+                $group = request()->post("group/a");
 
                 // 过滤不允许的组别,避免越权
                 $group = array_intersect($this->childrenGroupIds, $group);

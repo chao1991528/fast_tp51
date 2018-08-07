@@ -311,7 +311,7 @@ class Crud extends Command
         }
 
         //根据表名匹配对应的Fontawesome图标
-        $iconPath = ROOT_PATH . str_replace('/', DS, '/public/assets/libs/font-awesome/less/variables.less');
+        $iconPath = \think\facade\Env::get('root_path') . str_replace('/', DS, '/public/assets/libs/font-awesome/less/variables.less');
         $iconName = is_file($iconPath) && stripos(file_get_contents($iconPath), '@fa-var-' . $table . ':') ? 'fa fa-' . $table : 'fa fa-circle-o';
 
         //控制器
@@ -328,7 +328,7 @@ class Crud extends Command
         $viewDir = $adminPath . 'view' . DS . $controllerBaseName . DS;
 
         //最终将生成的文件路径
-        $javascriptFile = ROOT_PATH . 'public' . DS . 'assets' . DS . 'js' . DS . 'backend' . DS . $controllerBaseName . '.js';
+        $javascriptFile = \think\facade\Env::get('root_path') . 'public' . DS . 'assets' . DS . 'js' . DS . 'backend' . DS . $controllerBaseName . '.js';
         $addFile = $viewDir . 'add.html';
         $editFile = $viewDir . 'edit.html';
         $indexFile = $viewDir . 'index.html';
@@ -1005,7 +1005,7 @@ EOD;
         $parseName = ucfirst(array_pop($arr));
         $appNamespace = Config::get('app_namespace');
         $parseNamespace = "{$appNamespace}\\{$module}\\{$type}" . ($arr ? "\\" . implode("\\", $arr) : "");
-        $moduleDir = APP_PATH . $module . DS;
+        $moduleDir = \think\facade\Env::get('app_path') . $module . DS;
         $parseFile = $moduleDir . $type . DS . ($arr ? implode(DS, $arr) . DS : '') . $parseName . '.php';
         $parseArr = $arr;
         $parseArr[] = $parseName;

@@ -7,9 +7,9 @@ use app\common\model\UserRule;
 use fast\Random;
 use think\facade\Config;
 use think\Db;
-use think\Hook;
+use think\facade\Hook;
 use think\facade\Request;
-use think\Validate;
+use think\facade\Validate;
 
 class Auth
 {

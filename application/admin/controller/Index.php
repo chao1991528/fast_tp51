@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\admin\model\AdminLog;
 use app\common\controller\Backend;
+use think\addons\Service;
 use think\facade\Config;
 use think\facade\Hook;
 use think\Validate;
@@ -36,8 +37,8 @@ class Index extends Backend
             'auth/rule' => __('Menu'),
             'general'   => ['new', 'purple'],
         ], $this->view->site['fixedpage']);
-        $action = $this->request->request('action');
-        if ($this->request->isPost()) {
+        $action = request()->request('action');
+        if (request()->isPost()) {
             if ($action == 'refreshmenu') {
                 $this->success('', null, ['menulist' => $menulist, 'navlist' => $navlist]);
             }
@@ -55,15 +56,15 @@ class Index extends Backend
      */
     public function login()
     {
-        $url = $this->request->get('url', 'index/index');
+        $url = request()->get('url', 'index/index');
         if ($this->auth->isLogin()) {
             $this->success(__("You've logged in, do not login again"), $url);
         }
-        if ($this->request->isPost()) {
-            $username = $this->request->post('username');
-            $password = $this->request->post('password');
-            $keeplogin = $this->request->post('keeplogin');
-            $token = $this->request->post('__token__');
+        if (request()->isPost()) {
+            $username = request()->post('username');
+            $password = request()->post('password');
+            $keeplogin = request()->post('keeplogin');
+            $token = request()->post('__token__');
             $rule = [
                 'username'  => 'require|length:3,30',
                 'password'  => 'require|length:3,30',
@@ -76,12 +77,12 @@ class Index extends Backend
             ];
             if (Config::get('fastadmin.login_captcha')) {
                 $rule['captcha'] = 'require|captcha';
-                $data['captcha'] = $this->request->post('captcha');
+                $data['captcha'] = request()->post('captcha');
             }
             $validate = new Validate($rule, [], ['username' => __('Username'), 'password' => __('Password'), 'captcha' => __('Captcha')]);
             $result = $validate->check($data);
             if (!$result) {
-                $this->error($validate->getError(), $url, ['token' => $this->request->token()]);
+                $this->error($validate->getError(), $url, ['token' => request()->token()]);
             }
             AdminLog::setTitle(__('Login'));
             $result = $this->auth->login($username, $password, $keeplogin ? 86400 : 0);
@@ -91,7 +92,7 @@ class Index extends Backend
             } else {
                 $msg = $this->auth->getError();
                 $msg = $msg ? $msg : __('Username or password is incorrect');
-                $this->error($msg, $url, ['token' => $this->request->token()]);
+                $this->error($msg, $url, ['token' => request()->token()]);
             }
         }
 

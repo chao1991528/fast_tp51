@@ -6,7 +6,7 @@ use app\common\controller\Backend;
 use fast\Http;
 use think\addons\AddonException;
 use think\addons\Service;
-use think\Cache;
+use think\facade\Cache;
 use think\facade\Config;
 use think\Exception;
 
@@ -45,7 +45,7 @@ class Addon extends Backend
      */
     public function config($ids = NULL)
     {
-        $name = $this->request->get("name");
+        $name = request()->get("name");
         if (!$name) {
             $this->error(__('Parameter %s can not be empty', $ids ? 'id' : 'name'));
         }
@@ -56,8 +56,8 @@ class Addon extends Backend
         $config = get_addon_fullconfig($name);
         if (!$info)
             $this->error(__('No Results were found'));
-        if ($this->request->isPost()) {
-            $params = $this->request->post("row/a");
+        if (request()->isPost()) {
+            $params = request()->post("row/a");
             if ($params) {
                 foreach ($config as $k => &$v) {
                     if (isset($params[$v['name']])) {
@@ -90,16 +90,16 @@ class Addon extends Backend
      */
     public function install()
     {
-        $name = $this->request->post("name");
-        $force = (int)$this->request->post("force");
+        $name = request()->post("name");
+        $force = (int)request()->post("force");
         if (!$name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
         try {
-            $uid = $this->request->post("uid");
-            $token = $this->request->post("token");
-            $version = $this->request->post("version");
-            $faversion = $this->request->post("faversion");
+            $uid = request()->post("uid");
+            $token = request()->post("token");
+            $version = request()->post("version");
+            $faversion = request()->post("faversion");
             $extend = [
                 'uid'       => $uid,
                 'token'     => $token,
@@ -123,8 +123,8 @@ class Addon extends Backend
      */
     public function uninstall()
     {
-        $name = $this->request->post("name");
-        $force = (int)$this->request->post("force");
+        $name = request()->post("name");
+        $force = (int)request()->post("force");
         if (!$name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
@@ -143,9 +143,9 @@ class Addon extends Backend
      */
     public function state()
     {
-        $name = $this->request->post("name");
-        $action = $this->request->post("action");
-        $force = (int)$this->request->post("force");
+        $name = request()->post("name");
+        $action = request()->post("action");
+        $force = (int)request()->post("force");
         if (!$name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
@@ -169,7 +169,7 @@ class Addon extends Backend
     {
         Config::set('default_return_type', 'json');
 
-        $file = $this->request->file('file');
+        $file = request()->file('file');
         $addonTmpDir = RUNTIME_PATH . 'addons' . DS;
         if (!is_dir($addonTmpDir)) {
             @mkdir($addonTmpDir, 0755, true);
@@ -240,15 +240,15 @@ class Addon extends Backend
      */
     public function upgrade()
     {
-        $name = $this->request->post("name");
+        $name = request()->post("name");
         if (!$name) {
             $this->error(__('Parameter %s can not be empty', 'name'));
         }
         try {
-            $uid = $this->request->post("uid");
-            $token = $this->request->post("token");
-            $version = $this->request->post("version");
-            $faversion = $this->request->post("faversion");
+            $uid = request()->post("uid");
+            $token = request()->post("token");
+            $version = request()->post("version");
+            $faversion = request()->post("faversion");
             $extend = [
                 'uid'       => $uid,
                 'token'     => $token,
@@ -271,10 +271,10 @@ class Addon extends Backend
      */
     public function downloaded()
     {
-        $offset = (int)$this->request->get("offset");
-        $limit = (int)$this->request->get("limit");
-        $filter = $this->request->get("filter");
-        $search = $this->request->get("search");
+        $offset = (int)request()->get("offset");
+        $limit = (int)request()->get("limit");
+        $filter = request()->get("filter");
+        $search = request()->get("search");
         $search = htmlspecialchars(strip_tags($search));
         $onlineaddons = Cache::get("onlineaddons");
         if (!is_array($onlineaddons)) {
@@ -322,7 +322,7 @@ class Addon extends Backend
         }
         $result = array("total" => $total, "rows" => $list);
 
-        $callback = $this->request->get('callback') ? "jsonp" : "json";
+        $callback = request()->get('callback') ? "jsonp" : "json";
         return $callback($result);
     }
 

@@ -44,7 +44,7 @@ class Api extends Command
         }
         $lang = include_once $langFile;
         // 目标目录
-        $output_dir = ROOT_PATH . 'public' . DS;
+        $output_dir = \think\facade\Env::get('root_path') . 'public' . DS;
         $output_file = $output_dir . $input->getOption('output');
         if (is_file($output_file) && !$force) {
             throw new Exception("api index file already exists!\nIf you need to rebuild again, use the parameter --force=true ");
@@ -64,7 +64,7 @@ class Api extends Command
         // 模块
         $module = $input->getOption('module');
 
-        $moduleDir = APP_PATH . $module . DS;
+        $moduleDir = \think\facade\Env::get('app_path') . $module . DS;
         if (!is_dir($moduleDir)) {
             throw new Exception('module not found');
         }
