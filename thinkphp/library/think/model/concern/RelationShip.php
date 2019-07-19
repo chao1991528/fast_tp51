@@ -204,7 +204,7 @@ trait RelationShip
             $relationResult = $this->$method();
 
             if (isset($withRelationAttr[$relationName])) {
-                $relationResult->withAttr($withRelationAttr[$relationName]);
+                $relationResult->getQuery()->withAttr($withRelationAttr[$relationName]);
             }
 
             $this->relation[$relation] = $relationResult->getRelation($subRelation, $closure);
@@ -219,15 +219,16 @@ trait RelationShip
      * @param  array  $resultSet        数据集
      * @param  string $relation         关联名
      * @param  array  $withRelationAttr 关联获取器
+     * @param  bool   $join             是否为JOIN方式
      * @return array
      */
-    public function eagerlyResultSet(&$resultSet, $relation, $withRelationAttr = [])
+    public function eagerlyResultSet(&$resultSet, $relation, $withRelationAttr = [], $join = false)
     {
         $relations = is_string($relation) ? explode(',', $relation) : $relation;
 
         foreach ($relations as $key => $relation) {
             $subRelation = '';
-            $closure     = false;
+            $closure     = null;
 
             if ($relation instanceof \Closure) {
                 $closure  = $relation;
@@ -247,10 +248,10 @@ trait RelationShip
             $relationResult = $this->$relation();
 
             if (isset($withRelationAttr[$relationName])) {
-                $relationResult->withAttr($withRelationAttr[$relationName]);
+                $relationResult->getQuery()->withAttr($withRelationAttr[$relationName]);
             }
 
-            $relationResult->eagerlyResultSet($resultSet, $relation, $subRelation, $closure);
+            $relationResult->eagerlyResultSet($resultSet, $relation, $subRelation, $closure, $join);
         }
     }
 
@@ -260,15 +261,16 @@ trait RelationShip
      * @param  Model  $result           数据对象
      * @param  string $relation         关联名
      * @param  array  $withRelationAttr 关联获取器
+     * @param  bool   $join             是否为JOIN方式
      * @return Model
      */
-    public function eagerlyResult(&$result, $relation, $withRelationAttr = [])
+    public function eagerlyResult(&$result, $relation, $withRelationAttr = [], $join = false)
     {
         $relations = is_string($relation) ? explode(',', $relation) : $relation;
 
         foreach ($relations as $key => $relation) {
             $subRelation = '';
-            $closure     = false;
+            $closure     = null;
 
             if ($relation instanceof \Closure) {
                 $closure  = $relation;
@@ -288,10 +290,10 @@ trait RelationShip
             $relationResult = $this->$relation();
 
             if (isset($withRelationAttr[$relationName])) {
-                $relationResult->withAttr($withRelationAttr[$relationName]);
+                $relationResult->getQuery()->withAttr($withRelationAttr[$relationName]);
             }
 
-            $relationResult->eagerlyResult($result, $relation, $subRelation, $closure);
+            $relationResult->eagerlyResult($result, $relation, $subRelation, $closure, $join);
         }
     }
 
@@ -307,7 +309,7 @@ trait RelationShip
     public function relationCount(&$result, $relations, $aggregate = 'sum', $field = '*')
     {
         foreach ($relations as $key => $relation) {
-            $closure = false;
+            $closure = $name = null;
 
             if ($relation instanceof \Closure) {
                 $closure  = $relation;
@@ -318,9 +320,10 @@ trait RelationShip
             }
 
             $relation = Loader::parseName($relation, 1, false);
-            $count    = $this->$relation()->relationCount($result, $closure, $aggregate, $field);
 
-            if (!isset($name)) {
+            $count = $this->$relation()->relationCount($result, $closure, $aggregate, $field, $name);
+
+            if (empty($name)) {
                 $name = Loader::parseName($relation) . '_' . $aggregate;
             }
 

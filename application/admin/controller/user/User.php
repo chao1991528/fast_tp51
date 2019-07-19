@@ -31,6 +31,10 @@ class User extends Backend
      */
     public function index()
     {
+        $list = model('User')->where('status',1)->paginate(10,30);
+        // 获取分页显示
+        $page = $list->render();
+
         //设置过滤方法
         request()->filter(['strip_tags']);
         if (request()->isAjax())
@@ -60,7 +64,7 @@ class User extends Backend
 
             return json($result);
         }
-        return $this->view->fetch();
+        return $this->view->fetch('', ['page' => $page]);
     }
 
     /**

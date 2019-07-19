@@ -12,6 +12,7 @@
 
 namespace think;
 
+define('DS',DIRECTORY_SEPARATOR);
 // 加载基础文件
 require __DIR__ . '/thinkphp/base.php';
 
